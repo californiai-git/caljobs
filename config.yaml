@@ -1,13 +1,21 @@
+profiles:
+  - profile_name: "sreelata_de"
+    use_gmail: true
+    location:
+      city: "fremont"
+      allowed_types: ["remote", "hybrid"]
+    sites: ["linkedin", "google_jobs"]
+    
+  - profile_name: "prabir_nandi"
+    use_gmail: false
+    location:
+      city: "fremont"
+      allowed_types: ["remote", "hybrid"]
+    sites: ["linkedin", "google_jobs"]
+
 email:
-  address: "sreelatade@gmail.com"
-  query_filter: "is:unread (job OR recruiter OR interview)"
+  query_filter: 'subject:"job" OR subject:"opportunity"'
 
-search:
-  location: "California"
-  keywords: ["software", "engineer", "developer"]
-  sites:
-    - "calcareers"
-    - "linkedin"
-
-drive:
-  folder_id: "YOUR_DRIVE_FOLDER_ID"
+workflow:
+  generate_cv: true
+  upload_to_drive: true

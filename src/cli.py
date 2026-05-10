@@ -8,11 +8,11 @@ def main():
     args = parser.parse_args()
     
     if args.setup:
-        print("Setting up credentials...")
-        # TODO: call gmail_client.authenticate() and drive_client.authenticate()
+        print("Credentials setup is handled via the auth_utils module automatically when missing.")
     elif args.run:
         print("Running agent...")
-        # TODO: call runner.run_all()
+        from src.runner import run_all
+        run_all()
     else:
         parser.print_help()
 

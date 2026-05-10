@@ -6,3 +6,10 @@ google-auth-oauthlib
 pydantic
 pyyaml
 schedule
+docxtpl==0.16.7
+google-genai
+python-dotenv
+google-search-results
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib

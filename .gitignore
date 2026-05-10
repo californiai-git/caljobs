@@ -1,0 +1,16 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Google Credentials and Tokens
+credentials.json
+token.pickle
+
+# Output directories
+generated_cvs/
+daily_summary.json
+
+# Environment Variables
+.env
