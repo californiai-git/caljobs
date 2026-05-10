@@ -14,3 +14,4 @@ daily_summary.json
 
 # Environment Variables
 .env
+candidates.yaml

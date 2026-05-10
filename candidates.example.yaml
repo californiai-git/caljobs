@@ -1,0 +1,9 @@
+# Example template for candidates.yaml. Do not commit actual candidate data.
+clients:
+  - id: "john_doe"
+    email: "john.doe@example.com"
+    location: 
+      city: "san_francisco"
+      allowed_types: ["hybrid", "remote"]
+    check_gmail_inbox: true
+    custom_instructions: "Looking for senior software engineer roles."

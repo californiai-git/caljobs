@@ -1,10 +1,37 @@
 import logging
 import os
+import json
 from serpapi import GoogleSearch
+from google import genai
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
-def fetch_jobs(target_roles: list[str], location: dict) -> list[dict]:
+class SearchQueries(BaseModel):
+    queries: list[str]
+
+def generate_search_queries(role: str, location: dict, custom_instructions: str) -> list[str]:
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        return [f"{role} {location.get('city', '')}"]
+    try:
+        client = genai.Client(api_key=api_key)
+        prompt = f"Generate exactly 2 highly optimized Google Jobs search queries for a '{role}' role in '{location.get('city', '')}'. Allowed work types: {location.get('allowed_types')}. Extra Preferences: {custom_instructions}. Make the queries concise."
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt,
+            config={
+                'response_mime_type': 'application/json',
+                'response_schema': SearchQueries,
+            }
+        )
+        data = json.loads(response.text)
+        return data.get("queries", [role])
+    except Exception as e:
+        logger.error(f"Failed to generate queries with Gemini: {e}")
+        return [role]
+
+def fetch_jobs(target_roles: list[str], location: dict, custom_instructions: str = "") -> list[dict]:
     """
     Uses SerpApi to search Google Jobs for each target role in the specified location.
     """
@@ -19,21 +46,17 @@ def fetch_jobs(target_roles: list[str], location: dict) -> list[dict]:
     allowed_types = location.get("allowed_types", ["remote", "hybrid"])
     
     for role in target_roles:
-        logger.info(f"Scraping Google Jobs for: {role} in {city}")
+        logger.info(f"Generating AI search queries for: {role}")
+        queries = generate_search_queries(role, location, custom_instructions)
         
-        # Build search query (e.g. "software engineer remote")
-        q = f"{role}"
-        if "remote" in allowed_types and "remote" not in q.lower():
-             q += " remote"
-        else:
-             q += f" in {city}"
-             
-        params = {
-            "engine": "google_jobs",
-            "q": q,
-            "hl": "en",
-            "api_key": api_key,
-        }
+        for q in queries:
+            logger.info(f"Scraping Google Jobs for query: '{q}'")
+            params = {
+                "engine": "google_jobs",
+                "q": q,
+                "hl": "en",
+                "api_key": api_key,
+            }
         
         try:
             search = GoogleSearch(params)

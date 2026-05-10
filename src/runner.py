@@ -15,8 +15,16 @@ def load_config():
     with open("config.yaml", "r") as f:
         return yaml.safe_load(f)
 
+def load_candidates():
+    if not os.path.exists("candidates.yaml"):
+        logger.warning("candidates.yaml not found. Falling back to candidates.example.yaml")
+        with open("candidates.example.yaml", "r") as f:
+            return yaml.safe_load(f).get("clients", [])
+    with open("candidates.yaml", "r") as f:
+        return yaml.safe_load(f).get("clients", [])
+
 def process_profile(config, profile_data):
-    profile_name = profile_data.get("profile_name")
+    profile_name = profile_data.get("id")
     logger.info(f"--- Processing profile: {profile_name} ---")
     
     # Configure for this specific profile
@@ -37,14 +45,14 @@ def process_profile(config, profile_data):
     jobs_to_process = []
     
     # 1. Fetch Jobs from Web Scraper
-    sites = profile_data.get("sites", [])
-    if sites:
-        logger.info(f"Scraping jobs from {sites}...")
-        scraped_jobs = fetch_jobs(config["search"].get("roles", []), profile_data.get("location"))
-        jobs_to_process.extend(scraped_jobs)
+    # We always use the scraper now.
+    logger.info(f"Scraping jobs via SerpApi...")
+    custom_instructions = profile_data.get("custom_instructions", "")
+    scraped_jobs = fetch_jobs(config["search"].get("roles", []), profile_data.get("location"), custom_instructions)
+    jobs_to_process.extend(scraped_jobs)
     
     # 2. Check Emails if enabled
-    if profile_data.get("use_gmail"):
+    if profile_data.get("check_gmail_inbox"):
         logger.info("Checking Gmail inbox for jobs...")
         email_jobs = check_inbox(config.get("email", {}).get("query_filter", ""))
         jobs_to_process.extend(email_jobs)
@@ -65,7 +73,7 @@ def process_profile(config, profile_data):
 def run_all():
     load_dotenv()
     config = load_config()
-    profiles = config.get("profiles", [])
+    profiles = load_candidates()
     
     all_valid_jobs = []
     for profile in profiles:

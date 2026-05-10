@@ -32,6 +32,7 @@ jobs:
           GMAIL_TOKEN_BASE64: ${{ secrets.GMAIL_TOKEN_BASE64 }}
           SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
         run: |
-          echo "$GMAIL_CREDENTIALS" > credentials.json
-          echo "$GMAIL_TOKEN_BASE64" | base64 --decode > token.pickle
+          echo "${{ secrets.GMAIL_CREDENTIALS }}" > credentials.json
+          echo "${{ secrets.GMAIL_TOKEN_BASE64 }}" | base64 --decode > token.pickle
+          echo "${{ secrets.CANDIDATES_YAML }}" > candidates.yaml
           python -m src.cli --run
