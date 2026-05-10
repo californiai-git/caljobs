@@ -1,0 +1,13 @@
+email:
+  address: "sreelatade@gmail.com"
+  query_filter: "is:unread (job OR recruiter OR interview)"
+
+search:
+  location: "California"
+  keywords: ["software", "engineer", "developer"]
+  sites:
+    - "calcareers"
+    - "linkedin"
+
+drive:
+  folder_id: "YOUR_DRIVE_FOLDER_ID"
